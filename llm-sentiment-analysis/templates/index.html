@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LLM Sentiment Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+        }
+
+        .chat-container {
+            width: 50%;
+            margin: 50px auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        #chat-box {
+            height: 350px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .user {
+            margin-bottom: 10px;
+            color: #0b5ed7;
+        }
+
+        .bot {
+            margin-bottom: 15px;
+            color: #198754;
+        }
+
+        input {
+            width: 78%;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        button {
+            width: 20%;
+            padding: 10px;
+            font-size: 14px;
+            background: #0d6efd;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #084298;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <h2>LLM Sentiment Chatbot</h2>
+
+    <div id="chat-box"></div>
+
+    <input type="text" id="user-input" placeholder="Type your message here..." />
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+function sendMessage() {
+    const input = document.getElementById("user-input");
+    const text = input.value.trim();
+
+    if (text === "") return;
+
+    const chatBox = document.getElementById("chat-box");
+
+    // Show user message
+    chatBox.innerHTML += `<div class="user"><b>You:</b> ${text}</div>`;
+
+    fetch("/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: text })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Show bot response (LLM output)
+        chatBox.innerHTML += `<div class="bot"><b>Bot:</b><pre>${data.response}</pre></div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    })
+    .catch(error => {
+        chatBox.innerHTML += `<div class="bot">Error connecting to server</div>`;
+    });
+
+    input.value = "";
+}
+</script>
+
+</body>
+</html>
